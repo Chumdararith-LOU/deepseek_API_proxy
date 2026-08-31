@@ -59,6 +59,12 @@ curl -X POST http://localhost:26406/api/accounts \
   -d '{"email":"you@example.com","password":"your-password"}'
 ```
 
+On **Windows PowerShell** (`curl` is aliased to `Invoke-WebRequest`, which rejects these flags — use this instead):
+
+```powershell
+Invoke-RestMethod -Method POST http://localhost:26406/api/accounts -ContentType 'application/json' -Body '{"email":"you@example.com","password":"your-password"}'
+```
+
 **3. Environment variables** — format `ACCOUNTn=email:password`:
 
 ```bash
