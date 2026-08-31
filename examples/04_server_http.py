@@ -25,7 +25,7 @@ URL = "http://localhost:8000/v1/chat/completions"
 
 # Turn 1 — new conversation.
 first = requests.post(URL, json={
-    "model": "deepseek-chat",
+    "model": "deepseek-v4-flash",
     "messages": [{"role": "user", "content": "My name is Ada. Remember it."}],
 }).json()
 print("DeepSeek:", first["choices"][0]["message"]["content"])

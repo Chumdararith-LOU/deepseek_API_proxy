@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DeepSeek Gateway — Usage</title>
+    <link rel="stylesheet" href="/dashboard/static/shared.css" />
+    <style>
+      .usage-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .usage-summary .card {
+        background: var(--card-bg, #1e1e2e);
+        border: 1px solid var(--border, #333);
+        border-radius: 10px;
+        padding: 14px 16px;
+      }
+      .usage-summary .card .num {
+        font-size: 1.6rem;
+        font-weight: 700;
+        font-family: var(--mono);
+      }
+      .usage-summary .card .lbl {
+        font-size: 0.78rem;
+        opacity: 0.65;
+        margin-top: 2px;
+      }
+      .usage-table-wrap {
+        overflow-x: auto;
+      }
+      table.usage {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+      }
+      table.usage th,
+      table.usage td {
+        border-bottom: 1px solid var(--border, #333);
+        padding: 8px 10px;
+        text-align: left;
+        white-space: nowrap;
+      }
+      table.usage th {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        opacity: 0.6;
+      }
+      table.usage td.num {
+        font-family: var(--mono);
+        text-align: right;
+      }
+      .badge {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+      .badge-warning {
+        background: rgba(230, 150, 40, 0.18);
+        color: #e8a13c;
+      }
+      .badge-danger {
+        background: rgba(230, 60, 60, 0.18);
+        color: #ef6b6b;
+      }
+      .badge-neutral {
+        background: rgba(128, 128, 128, 0.15);
+        color: #aaa;
+      }
+      .model-split {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 4px;
+      }
+      .model-chip {
+        font-family: var(--mono);
+        font-size: 0.68rem;
+        border: 1px solid var(--border, #333);
+        border-radius: 6px;
+        padding: 2px 6px;
+        color: #ccc;
+      }
+      .model-chip b {
+        color: #fff;
+      }
+      .rate-hit {
+        color: #ef6b6b;
+        font-size: 0.7rem;
+      }
+      .empty {
+        opacity: 0.5;
+        padding: 30px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body class="dark">
+    <header class="dash-header">
+      <div class="dash-header-inner">
+        <span class="logo">⚡ DeepSeek Gateway</span>
+        <nav class="dash-nav">
+          <a href="/dashboard">Overview</a>
+          <a href="/dashboard/accounts">Accounts</a>
+          <a href="/dashboard/usage" class="active">Usage</a>
+          <a href="/dashboard/network">Network</a>
+          <a href="/dashboard/monitor">Monitor</a>
+          <a href="/dashboard/settings">Settings</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="dash-main">
+      <h1>Daily Usage</h1>
+      <p class="subtitle">Requests per account × model, tracked daily. Rate-limit walls are recorded when DeepSeek blocks a model.</p>
+
+      <div class="usage-summary" id="summaryCards"></div>
+
+      <div class="usage-table-wrap">
+        <table class="usage">
+          <thead>
+            <tr>
+              <th>Account</th>
+              <th>Today</th>
+              <th>Yesterday</th>
+              <th>Last 7 days</th>
+              <th>Per-model breakdown</th>
+            </tr>
+          </thead>
+          <tbody id="usageBody"></tbody>
+        </table>
+        <div class="empty" id="emptyState" style="display:none">No usage recorded yet — send some requests first.</div>
+      </div>
+    </main>
+
+    <script src="/dashboard/static/shared.js"></script>
+    <script>
+      function escHtml(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      }
+
+      function fmtNum(n) {
+        return (n || 0).toLocaleString('en-US');
+      }
+
+      function renderSummary(accounts) {
+        var totalToday = 0;
+        var totalWeek = 0;
+        var hits = 0;
+        Object.keys(accounts).forEach(function (email) {
+          var a = accounts[email];
+          totalToday += a.today;
+          totalWeek += a.week;
+          Object.keys(a.models).forEach(function (m) {
+            hits += a.models[m].rateLimited || 0;
+          });
+        });
+        var cards = [
+          { num: fmtNum(totalToday), lbl: 'Requests today' },
+          { num: fmtNum(totalWeek), lbl: 'Requests last 7 days' },
+          { num: Object.keys(accounts).length, lbl: 'Active accounts' },
+          { num: hits, lbl: 'Rate-limit walls hit', warn: hits > 0 },
+        ];
+        document.getElementById('summaryCards').innerHTML = cards
+          .map(function (c) {
+            return (
+              '<div class="card"><div class="num">' + c.num + '</div><div class="lbl">' + c.lbl + '</div></div>'
+            );
+          })
+          .join('');
+      }
+
+      function renderTable(accounts) {
+        var emails = Object.keys(accounts);
+        if (!emails.length) {
+          document.getElementById('emptyState').style.display = 'block';
+          return;
+        }
+        document.getElementById('emptyState').style.display = 'none';
+        var rows = emails
+          .sort(function (a, b) {
+            return (accounts[b].today || 0) - (accounts[a].today || 0);
+          })
+          .map(function (email) {
+            var a = accounts[email];
+            var models = Object.keys(a.models).sort(function (x, y) {
+              return (a.models[y].requests || 0) - (a.models[x].requests || 0);
+            });
+            var chips = models
+              .map(function (m) {
+                var e = a.models[m];
+                var hit =
+                  e.rateLimited > 0
+                    ? ' <span class="rate-hit" title="' +
+                      e.rateLimited +
+                      ' wall hit(s), last wait ' +
+                      (e.lastWaitHours != null ? e.lastWaitHours + 'h' : '?') +
+                      '">⚠' +
+                      e.rateLimited +
+                      '</span>'
+                    : '';
+                return '<span class="model-chip">' + escHtml(m) + ' <b>' + fmtNum(e.requests) + '</b>' + hit + '</span>';
+              })
+              .join('');
+            return (
+              '<tr>' +
+              '<td><b>' +
+              escHtml(email) +
+              '</b></td>' +
+              '<td class="num">' +
+              fmtNum(a.today) +
+              '</td>' +
+              '<td class="num">' +
+              fmtNum(a.yesterday) +
+              '</td>' +
+              '<td class="num">' +
+              fmtNum(a.week) +
+              '</td>' +
+              '<td><div class="model-split">' +
+              (chips || '<span class="badge badge-neutral">—</span>') +
+              '</div></td>' +
+              '</tr>'
+            );
+          })
+          .join('');
+        document.getElementById('usageBody').innerHTML = rows;
+      }
+
+      async function loadUsage() {
+        try {
+          var data = await apiFetch('/usage');
+          var accounts = data && data.accounts ? data.accounts : {};
+          renderSummary(accounts);
+          renderTable(accounts);
+        } catch (e) {
+          document.getElementById('usageBody').innerHTML =
+            '<tr><td colspan="5" class="empty">Failed to load usage: ' + escHtml(e.message) + '</td></tr>';
+        }
+      }
+
+      loadUsage();
+      setInterval(loadUsage, 15000);
+    </script>
+  </body>
+</html>

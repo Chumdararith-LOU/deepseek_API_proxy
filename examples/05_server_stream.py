@@ -27,7 +27,7 @@ import requests
 URL = "http://localhost:8000/v1/chat/completions"
 
 with requests.post(URL, json={
-    "model": "deepseek-chat",
+    "model": "deepseek-v4-flash",
     "stream": True,
     "messages": [{"role": "user", "content": "Tell me a short, clean joke."}],
 }, stream=True) as response:

@@ -23,11 +23,11 @@ SERVER_INTERACTIVE_LOGIN = os.getenv("SERVER_INTERACTIVE_LOGIN", "1").lower() no
 # "vision" is deferred: it only does anything with an image attached, which needs
 # ref_file_ids / file-upload plumbing we don't have yet.
 MODEL_MAP = {
-    "deepseek-chat":   "default",   # Instant — the fast default model
-    "deepseek-expert": "expert",    # Expert  — the stronger, slower model
+    "deepseek-v4-flash": "default",   # Instant — the fast default model
+    "deepseek-v4-pro":   "expert",    # Expert  — the stronger, slower model
 }
 
-DEFAULT_MODEL = "deepseek-chat"
+DEFAULT_MODEL = "deepseek-v4-flash"
 
 
 def is_known_model(name: str) -> bool:

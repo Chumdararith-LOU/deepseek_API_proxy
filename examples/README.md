@@ -29,7 +29,7 @@ The server limits requests per client IP (default 30/min, set via
 `RATE_LIMIT_PER_MINUTE`); over the limit you get HTTP `429` with a `Retry-After`
 header.
 
-The `model` name selects the model — `deepseek-chat` (fast) or `deepseek-expert`
+The `model` name selects the model — `deepseek-v4-flash` (fast) or `deepseek-v4-pro`
 (stronger, slower); see [server/config.py](../server/config.py). DeepThink and web
 search are separate toggles, requested via the `thinking` and `search` booleans in
 the request body — or through `extra_body` with the OpenAI SDK.

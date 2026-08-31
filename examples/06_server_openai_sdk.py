@@ -22,10 +22,10 @@ from openai import OpenAI
 client = OpenAI(base_url="http://localhost:8000/v1", api_key="unused")
 
 completion = client.chat.completions.create(
-    # model picks WHICH model answers: deepseek-chat (fast) or deepseek-expert
+    # model picks WHICH model answers: deepseek-v4-flash (fast) or deepseek-v4-pro
     # (stronger, slower). thinking (DeepThink) and search (web) are independent
     # toggles; they ride in extra_body, since they're outside OpenAI's schema.
-    model="deepseek-expert",
+    model="deepseek-v4-pro",
     messages=[{"role": "system", "content" : "You are a helpful agent who always replies in Hindi"}, {"role": "user", "content": "what is better macbook or framework."}],
     extra_body={"thinking": True, "search": True, "conversation_id" : "320ab157-cf58-4074-9869-27dc1bcccf78:2"},   # also: "search": True for web search
 )
@@ -39,7 +39,7 @@ print("conversation_id:", cid)
 # To continue that conversation, send the id back via extra_body too:
 #
 #   client.chat.completions.create(
-#       model="deepseek-expert",
+#       model="deepseek-v4-pro",
 #       messages=[{"role": "user", "content": "What's my name?"}],
 #       extra_body={"conversation_id": cid, "thinking": True},
 #   )

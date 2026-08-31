@@ -1,0 +1,45 @@
+{
+  "name": "deepseek-gateway",
+  "version": "1.0.0",
+  "description": "OpenAI-compatible API gateway for DeepSeek models - drop-in replacement for /v1/chat/completions with browser-based auth, PoW solving, streaming SSE, and web dashboard",
+  "type": "module",
+  "bin": {
+    "dsg": "./bin/dsg",
+    "deepseek-gateway": "./bin/dsg"
+  },
+  "scripts": {
+    "start": "bun src/index.tsx",
+    "dev": "bun --watch src/index.tsx",
+    "start:prod": "bun dist/index.js",
+    "start:node": "node --import tsx src/index.tsx",
+    "cluster": "bun src/cluster.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "setup": "node scripts/setup.js",
+    "test": "bun test",
+    "quality": "biome check src/ && echo 'No test suite specified' && exit 0",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src/",
+    "format": "biome check --write src/",
+    "postinstall": "node scripts/setup.js || exit 0"
+  },
+  "dependencies": {
+    "hono": "^4.12.21",
+    "@hono/node-server": "^2.0.3",
+    "playwright": "^1.60.0",
+    "playwright-core": "^1.61.0",
+    "cloakbrowser": "^0.5.3",
+    "wreq-js": "^2.3.1",
+    "zod": "^4.4.3",
+    "mmdb-lib": "^3.0.3",
+    "dotenv": "^16.6.1"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "@types/bun": "latest",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.22.3",
+    "@biomejs/biome": "^2.5.0",
+    "oxlint": "^1.70.0",
+    "knip": "^6.17.1"
+  }
+}

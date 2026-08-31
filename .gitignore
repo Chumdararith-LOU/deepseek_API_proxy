@@ -1,11 +1,29 @@
+# Dependencies
+node_modules/
 venv/
 __pycache__/
 *.pyc
-.env
 
-# Session artifacts — contain session tokens + cookies. NEVER commit.
+# Secrets & local account state — NEVER commit (tokens, encrypted passwords, master key)
+.deepseek/
 session.json
 session
+.env
 *.env.*
 !.env.example
+
+# Request logs (may contain prompt content)
+.logs/
+
+# Build output
+dist/
+
+# Personal / local-only files
+config.json
+opencode.json
+.agents/
+skills-lock.json
+test_import.ts
+filter_proxy.py
 CLAUDE.md
+.DS_Store

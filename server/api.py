@@ -6,7 +6,7 @@ Point any OpenAI client at http://localhost:8000/v1 :
     from openai import OpenAI
     client = OpenAI(base_url="http://localhost:8000/v1", api_key="not-needed")
     r = client.chat.completions.create(
-        model="deepseek-chat",
+        model="deepseek-v4-flash",
         messages=[{"role": "user", "content": "Hello!"}],
     )
 
