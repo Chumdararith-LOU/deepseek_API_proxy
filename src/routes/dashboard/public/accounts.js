@@ -159,7 +159,11 @@ function handleAdd(email, password) {
       }
       if (!res.ok) {
         throw new Error(
-          result && result.error && result.error.message ? result.error.message : 'Failed to add account (' + res.status + ')',
+          result && result.error
+            ? typeof result.error === 'string'
+              ? result.error
+              : result.error.message || 'Failed to add account (' + res.status + ')'
+            : 'Failed to add account (' + res.status + ')',
         );
       }
       if (result.loginSucceeded) {
@@ -200,7 +204,11 @@ function handleRemove(email) {
       }
       if (!res.ok) {
         throw new Error(
-          result && result.error && result.error.message ? result.error.message : 'Failed to remove account (' + res.status + ')',
+          result && result.error
+            ? typeof result.error === 'string'
+              ? result.error
+              : result.error.message || 'Failed to remove account (' + res.status + ')'
+            : 'Failed to remove account (' + res.status + ')',
         );
       }
       showToast('Account removed: ' + email, 'success');
