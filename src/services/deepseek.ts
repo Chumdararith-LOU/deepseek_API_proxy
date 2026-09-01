@@ -15,6 +15,9 @@ export { configureAccount, deleteAllChats, fetchDeepseekModels } from "./deepsee
 
 // Shared URL constants for Deepseek API
 export const DEEPSEEK_API_BASE = "https://chat.deepseek.com";
+// Browser impersonation UA for DeepSeek's web API — host OS is irrelevant, keep it identical everywhere
+export const DEFAULT_USER_AGENT =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36";
 export const DEEPSEEK_CHAT_COMPLETIONS_URL = `${DEEPSEEK_API_BASE}/api/v0/chat/completion`;
 export const DEEPSEEK_SETTINGS_URL = `${DEEPSEEK_API_BASE}/api/v2/users/user/settings/update`;
 export const DEEPSEEK_CHATS_URL = `${DEEPSEEK_API_BASE}/api/v2/chats/`;
@@ -131,9 +134,7 @@ function buildRequestHeaders(reqHeaders: Record<string, string>, cId?: string): 
     "sec-ch-ua-mobile": "?0",
     "sec-ch-ua-platform": '"macOS"',
     timezone: cachedTimezone,
-    "user-agent":
-      reqHeaders["user-agent"] ||
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "user-agent": reqHeaders["user-agent"] || DEFAULT_USER_AGENT,
     "x-accel-buffering": "no",
     "x-app-version": "2.0.0",
     "x-client-version": "2.0.0",

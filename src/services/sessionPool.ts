@@ -15,7 +15,7 @@ import {
   throttleAccount,
 } from "./auth.ts";
 import { config } from "./configService.ts";
-import { createFetchTimeout, DEEPSEEK_API_BASE } from "./deepseek.ts";
+import { createFetchTimeout, DEFAULT_USER_AGENT, DEEPSEEK_API_BASE } from "./deepseek.ts";
 import { logStore } from "./logStore.ts";
 import { type BasicHeaders, getBasicHeaders } from "./playwright.ts";
 
@@ -236,9 +236,7 @@ export class SessionPool {
         cookie: cookieStr,
         origin: DEEPSEEK_API_BASE,
         referer: `${DEEPSEEK_API_BASE}/`,
-        "user-agent":
-          _headers.userAgent ||
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+        "user-agent": _headers.userAgent || DEFAULT_USER_AGENT,
         ...(bearer ? { authorization: bearer } : {}),
       },
       body: JSON.stringify({

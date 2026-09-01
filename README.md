@@ -47,7 +47,7 @@ curl http://localhost:26406/v1/chat/completions \
 
 ## Adding accounts
 
-Pick one of three methods:
+Pick one of four methods:
 
 **1. Dashboard (recommended)** — http://localhost:26406/dashboard/accounts → *Add Account*
 
@@ -69,6 +69,18 @@ Invoke-RestMethod -Method POST http://localhost:26406/api/accounts -ContentType 
 
 ```bash
 ACCOUNT1=a@example.com:pass1 ACCOUNT2=b@example.com:pass2 bun run start
+```
+
+**4. Manual token** — if password login fails with CAPTCHA/WAF ("Could not find email field"), grab the token cookie instead:
+
+1. Log in manually at https://chat.deepseek.com in your browser
+2. DevTools → **Application** → **Cookies** → `https://chat.deepseek.com` → copy the value of **`token`**
+3. Add the account first (method 1–3, or the dashboard — the login-failure toast is fine), then paste the token:
+
+```bash
+curl -X POST "http://localhost:26406/api/accounts/you@example.com/token" \
+  -H 'Content-Type: application/json' \
+  -d '{"token":"<paste token>","refreshToken":"<optional refresh_token cookie>"}'
 ```
 
 Passwords are encrypted at rest in `.deepseek/` (local only, git-ignored). Check status any time at `GET /health`.

@@ -1,5 +1,6 @@
 import { launch as cloakLaunch } from "cloakbrowser";
 import { type Browser, type BrowserContext, type Cookie, chromium, firefox, type Page, webkit } from "playwright";
+import { DEFAULT_USER_AGENT } from "./deepseek.ts";
 import { logStore } from "./logStore.ts";
 
 export type BrowserType = "chromium" | "firefox" | "webkit" | "chrome" | "edge";
@@ -92,8 +93,7 @@ export async function getBasicHeaders(email?: string): Promise<BasicHeaders> {
   }
   // No Playwright needed for headers — cookies from saved account state.
   if (!cachedUserAgent) {
-    cachedUserAgent =
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36";
+    cachedUserAgent = DEFAULT_USER_AGENT;
   }
   const cookieStr = await getCookies(email);
   const { getAccountByEmail, getAccounts } = await import("./accountManager.ts");

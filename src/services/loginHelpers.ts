@@ -7,7 +7,7 @@
 import crypto from "node:crypto";
 import type { AuthState } from "./accountManager.ts";
 import { config } from "./configService.ts";
-import { createFetchTimeout, DEEPSEEK_API_BASE } from "./deepseek.ts";
+import { createFetchTimeout, DEFAULT_USER_AGENT, DEEPSEEK_API_BASE } from "./deepseek.ts";
 import { logStore } from "./logStore.ts";
 import {
   type AccountContext,
@@ -41,8 +41,7 @@ export async function loginFreshViaFetch(email: string, hashedPassword: string):
       headers: {
         accept: "application/json, text/plain, */*",
         "content-type": "application/json",
-        "user-agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+        "user-agent": DEFAULT_USER_AGENT,
         "x-client-platform": "web",
         "x-client-locale": "en_US",
         "x-request-id": crypto.randomUUID(),
